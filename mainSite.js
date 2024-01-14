@@ -1,4 +1,4 @@
-const switchButton = document.getElementById("SwitchSite");
+/*const switchButton = document.getElementById("SwitchSite");
 const contentElm = document.getElementById("content");
 
 const data = new Map([
@@ -27,4 +27,8 @@ const update = (tabId) => {
     history.pushState(null, "", entry.url);
     contentElm.innerHtml = entry.content;
   }
-};
+};*/
+console.log("Transferring to the better site cuz this page is goofy and doesnt work");
+setTimeout(300, function() {
+  location.href = "fixed/index.html";
+});
