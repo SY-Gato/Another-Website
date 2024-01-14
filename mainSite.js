@@ -30,5 +30,5 @@ const update = (tabId) => {
 };*/
 console.log("Transferring to the better site cuz this page is goofy and doesnt work");
 setTimeout(300, function() {
-  location.href = "fixed/index.html";
+  location.href = "fixed/frontend/index.html";
 });
