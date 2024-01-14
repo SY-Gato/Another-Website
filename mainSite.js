@@ -1,4 +1,5 @@
 const switchButton = document.getElementById("SwitchSite");
+const contentElm = document.getElementById("content");
 
 const data = new Map([
   [
@@ -24,6 +25,6 @@ const update = (tabId) => {
   const entry = data.get(tabId);
   if (entry) {
     history.pushState(null, "", entry.url);
-    contenr.innerHtml = entry.content;
+    contentElm.innerHtml = entry.content;
   }
 };
