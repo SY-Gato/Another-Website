@@ -8,4 +8,34 @@ body {
   background: #1c1e26;
   max-width: 500px;
   max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+input[type="color"] {
+  border: none;
+  width: 32.5%;
+  height: 40px;
+  border-radius: 6px;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.qr-text {
+  padding: 1rem;
+  display: block;
+  background: #181b29;
+  border: 1px;
 }
