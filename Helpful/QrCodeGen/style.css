@@ -49,3 +49,12 @@ a {
   color: #8b92b7;
   font-weight: 500;
 }
+
+#qr-code {
+  height: 500px;
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #414866;
+}
