@@ -63,3 +63,13 @@ a {
   max-width: 100% !important;
   max-height: 100% !important;
 }
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sizes {
+  width: 32.5%;
+  height: 40px;
