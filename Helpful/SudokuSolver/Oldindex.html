@@ -226,10 +226,10 @@ function isValidMove(board, row, col, num) {
 function clearSudokuGrid() {
     for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
-            const cellId = "cell-${row}-${col}";
+            const cellId = `cell-${row}-${col}`;
             const cell = document.getElementById(cellId);
-            cell.value = "";
-            cell.style.color = 'white';
+            cell.value = null;
+            //cell.style.color = 'white';
             if (cell.classList.contains("user-input")) cell.classList.remove("user-input");
             if (cell.classList.contains("solved")) cell.classList.remove("solved");
             /*if (cell) {
