@@ -1,10 +1,10 @@
 let startTime, endTime;
 let imageSize = "";
 let image = new Image();
-let bitSpeed = document.getElementById("bits"),
-    kbSpeed = document.getElementById("kbs"),
-    mbSpeed = document.getElementById("mbs"),
-    info = document.getElementById("info");
+let bitSpeed = document.getElementById("bits");
+let kbSpeed = document.getElementById("kbps");
+let mbSpeed = document.getElementById("mbps");
+let info = document.getElementById("info");
 
 let totalBitSpeed = 0;
 let totalKbSpeed = 0;
