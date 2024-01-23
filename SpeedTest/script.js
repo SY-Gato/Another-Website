@@ -73,3 +73,9 @@ window.onload = () => {
         init();
     }
 };
+
+
+function scanAgain() {
+    reload();
+    //for (let i = 0; i < numTests; i++) init();
+}
