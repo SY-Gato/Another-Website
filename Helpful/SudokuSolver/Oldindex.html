@@ -171,20 +171,7 @@ async function solveSudoku() {
     } else {
         alert("No solution exists for the given Sudoku puzzle.");
     }
-    async function clearSudokuGrid() {
-      for (let row = 0; row < gridSize; row++) {
-          for (let col = 0; col < gridSize; col++) {
-              const cellId = "cell-${row}-${col}";
-              const cell = document.getElementById(cellId);
-              if (cell) {
-                  if (cell.classList.contains("user-input")) cell.classList.remove("user-input");
-                  if (cell.classList.contains("solved")) cell.classList.remove("solved");
-              }
-          }
-      }
-    }
 }
-
 function solveSudokuHelper(board) {
     const gridSize = 9;
 
@@ -236,6 +223,20 @@ function isValidMove(board, row, col, num) {
     return true; // No conflicts found
 }
 
+function clearSudokuGrid() {
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+            const cellId = "cell-${row}-${col}";
+            const cell = document.getElementById(cellId);
+            if (cell) {
+                if (cell.classList.contains("user-input")) cell.classList.remove("user-input");
+                if (cell.classList.contains("solved")) cell.classList.remove("solved");
+            }
+          }
+      }
+    }
+
+    
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
