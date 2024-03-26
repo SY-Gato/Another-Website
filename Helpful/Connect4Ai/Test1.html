@@ -68,49 +68,67 @@
             renderBoard();
         }
 
-        // Make a move
-        // Make a move
-function makeMove(col) {
-    if (currentPlayer === PLAYER1) {
-        for (let row = ROWS - 1; row >= 0; row--) {
-            if (board[row][col] === EMPTY) {
-                board[row][col] = currentPlayer;
-                renderBoard();
-                if (checkWin(row, col, currentPlayer)) {
-                    alert('Player 1 wins!');
-                    resetGame();
-                } else if (checkDraw()) {
-                    alert('It\'s a draw!');
-                    resetGame();
-                } else {
-                    currentPlayer = PLAYER2;
-                    aiMove();
-                }
-                return;
+        // Make a move for the player
+function makePlayerMove(col) {
+    for (let row = ROWS - 1; row >= 0; row--) {
+        if (board[row][col] === EMPTY) {
+            board[row][col] = currentPlayer;
+            renderBoard();
+            if (checkWin(row, col, currentPlayer)) {
+                alert('Player 1 wins!');
+                resetGame();
+            } else if (checkDraw()) {
+                alert('It\'s a draw!');
+                resetGame();
+            } else {
+                currentPlayer = PLAYER2;
+                // After player's move, AI makes its move
+                aiMove();
             }
+            return;
         }
     }
 }
 
-
-        // AI makes a move using Minimax with alpha-beta pruning
-        function aiMove() {
-            let bestScore = -Infinity;
-            let bestColumn;
-            for (let col = 0; col < COLS; col++) {
-                if (isValidMove(col)) {
-                    const row = getNextEmptyRow(col);
-                    board[row][col] = PLAYER2;
-                    const score = minimax(board, 4, -Infinity, Infinity, false);
-                    board[row][col] = EMPTY;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestColumn = col;
-                    }
-                }
+// Make a move for the AI
+function aiMove() {
+    let bestScore = -Infinity;
+    let bestColumn;
+    for (let col = 0; col < COLS; col++) {
+        if (isValidMove(col)) {
+            const row = getNextEmptyRow(col);
+            board[row][col] = PLAYER2;
+            const score = minimax(board, 4, -Infinity, Infinity, false);
+            board[row][col] = EMPTY;
+            if (score > bestScore) {
+                bestScore = score;
+                bestColumn = col;
             }
-            makeMove(bestColumn);
         }
+    }
+    makeAIMove(bestColumn);
+}
+
+// Make a move on the board for the AI
+function makeAIMove(col) {
+    for (let row = ROWS - 1; row >= 0; row--) {
+        if (board[row][col] === EMPTY) {
+            board[row][col] = currentPlayer;
+            renderBoard();
+            if (checkWin(row, col, currentPlayer)) {
+                alert('Player 2 wins!');
+                resetGame();
+            } else if (checkDraw()) {
+                alert('It\'s a draw!');
+                resetGame();
+            } else {
+                currentPlayer = PLAYER1;
+            }
+            return;
+        }
+    }
+}
+
 
         // Minimax algorithm with alpha-beta pruning
         function minimax(board, depth, alpha, beta, maximizingPlayer) {
