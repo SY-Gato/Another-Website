@@ -55,7 +55,7 @@
                 cell.className = 'cell';
                 cell.dataset.row = i;
                 cell.dataset.col = j;
-                cell.addEventListener('click', () => makeMove(j));
+                cell.addEventListener('click', () => makePlayerMove(j));
                 boardElement.appendChild(cell);
                 board[i][j] = EMPTY;
             }
@@ -70,6 +70,7 @@
 
         // Make a move for the player
 function makePlayerMove(col) {
+    if (currentPlayer == PLAYER1) {
     for (let row = ROWS - 1; row >= 0; row--) {
         if (board[row][col] === EMPTY) {
             board[row][col] = currentPlayer;
@@ -87,6 +88,7 @@ function makePlayerMove(col) {
             }
             return;
         }
+    }
     }
 }
 
