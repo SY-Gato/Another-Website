@@ -69,27 +69,29 @@
         }
 
         // Make a move
-        function makeMove(col) {
-            if (currentPlayer === PLAYER1) {
-                for (let row = ROWS - 1; row >= 0; row--) {
-                    if (board[row][col] === EMPTY) {
-                        board[row][col] = currentPlayer;
-                        renderBoard();
-                        if (checkWin(row, col, currentPlayer)) {
-                            alert('Player 1 wins!');
-                            resetGame();
-                        } else if (checkDraw()) {
-                            alert('It\'s a draw!');
-                            resetGame();
-                        } else {
-                            currentPlayer = PLAYER2;
-                            aiMove();
-                        }
-                        return;
-                    }
+        // Make a move
+function makeMove(col) {
+    if (currentPlayer === PLAYER1) {
+        for (let row = ROWS - 1; row >= 0; row--) {
+            if (board[row][col] === EMPTY) {
+                board[row][col] = currentPlayer;
+                renderBoard();
+                if (checkWin(row, col, currentPlayer)) {
+                    alert('Player 1 wins!');
+                    resetGame();
+                } else if (checkDraw()) {
+                    alert('It\'s a draw!');
+                    resetGame();
+                } else {
+                    currentPlayer = PLAYER2;
+                    aiMove();
                 }
+                return;
             }
         }
+    }
+}
+
 
         // AI makes a move using Minimax with alpha-beta pruning
         function aiMove() {
