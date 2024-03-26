@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4</title>
+    <style>
+        /* CSS styling for the game board */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            grid-template-rows: repeat(6, 50px);
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            background-color: #ffffff;
+        }
+        .red {
+            background-color: #ff4136; /* Red color for player 1 */
+        }
+        .yellow {
+            background-color: #ffdc00; /* Yellow color for player 2 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Connect 4</h1>
+    <div class="board" id="board"></div>
+    <button onclick="resetGame()">Reset Game</button>
+
+    <script>
+        // JavaScript code for Connect 4 game
+
+        // Constants
+        const ROWS = 6;
+        const COLS = 7;
+        const EMPTY = 0;
+        const PLAYER1 = 1;
+        const PLAYER2 = 2;
+        const WINNING_LENGTH = 4;
+
+        let currentPlayer = PLAYER1;
+        let board = [];
+
+        // Create game board
+        const boardElement = document.getElementById('board');
+        for (let i = 0; i < ROWS; i++) {
+            board[i] = [];
+            for (let j = 0; j < COLS; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.addEventListener('click', () => makeMove(j));
+                boardElement.appendChild(cell);
+                board[i][j] = EMPTY;
+            }
+        }
+
+        // Reset game
+        function resetGame() {
+            board.forEach(row => row.fill(EMPTY));
+            currentPlayer = PLAYER1;
+            renderBoard();
+        }
+
+        // Make a move
+        function makeMove(col) {
+            if (currentPlayer === PLAYER1) {
+                for (let row = ROWS - 1; row >= 0; row--) {
+                    if (board[row][col] === EMPTY) {
+                        board[row][col] = currentPlayer;
+                        renderBoard();
+                        if (checkWin(row, col, currentPlayer)) {
+                            alert('Player 1 wins!');
+                            resetGame();
+                        } else if (checkDraw()) {
+                            alert('It\'s a draw!');
+                            resetGame();
+                        } else {
+                            currentPlayer = PLAYER2;
+                            aiMove();
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+
+        // AI makes a move using Minimax with alpha-beta pruning
+        function aiMove() {
+            let bestScore = -Infinity;
+            let bestColumn;
+            for (let col = 0; col < COLS; col++) {
+                if (isValidMove(col)) {
+                    const row = getNextEmptyRow(col);
+                    board[row][col] = PLAYER2;
+                    const score = minimax(board, 4, -Infinity, Infinity, false);
+                    board[row][col] = EMPTY;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestColumn = col;
+                    }
+                }
+            }
+            makeMove(bestColumn);
+        }
+
+        // Minimax algorithm with alpha-beta pruning
+        function minimax(board, depth, alpha, beta, maximizingPlayer) {
+            if (depth === 0 || checkWin(null, null, PLAYER1) || checkWin(null, null, PLAYER2) || checkDraw()) {
+                return evaluate(board);
+            }
+
+            if (maximizingPlayer) {
+                let maxEval = -Infinity;
+                for (let col = 0; col < COLS; col++) {
+                    if (isValidMove(col)) {
+                        const row = getNextEmptyRow(col);
+                        board[row][col] = PLAYER2;
+                        const eval = minimax(board, depth - 1, alpha, beta, false);
+                        board[row][col] = EMPTY;
+                        maxEval = Math.max(maxEval, eval);
+                        alpha = Math.max(alpha, eval);
+                        if (beta <= alpha) {
+                            break;
+                        }
+                    }
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (let col = 0; col < COLS; col++) {
+                    if (isValidMove(col)) {
+                        const row = getNextEmptyRow(col);
+                        board[row][col] = PLAYER1;
+                        const eval = minimax(board, depth - 1, alpha, beta, true);
+                        board[row][col] = EMPTY;
+                        minEval = Math.min(minEval, eval);
+                        beta = Math.min(beta, eval);
+                        if (beta <= alpha) {
+                            break;
+                        }
+                    }
+                }
+                return minEval;
+            }
+        }
+
+        // Evaluate the board position
+        function evaluate(board) {
+            // Implement your evaluation function here
+            return 0;
+        }
+
+        // Check if a move is valid
+        function isValidMove(col) {
+            return board[0][col] === EMPTY;
+        }
+
+        // Get the next empty row in a column
+        function getNextEmptyRow(col) {
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (board[row][col] === EMPTY) {
+                    return row;
+                }
+            }
+            return -1; // Column is full
+        }
+
+        // Check for a win
+        function checkWin(row, col, player) {
+            // Check horizontally
+            for (let c = 0; c <= COLS - WINNING_LENGTH; c++) {
+                for (let r = 0; r < ROWS; r++) {
+                    if (board[r][c] === player &&
+                        board[r][c + 1] === player &&
+                        board[r][c + 2] === player &&
+                        board[r][c + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check vertically
+            for (let c = 0; c < COLS; c++) {
+                for (let r = 0; r <= ROWS - WINNING_LENGTH; r++) {
+                    if (board[r][c] === player &&
+                        board[r + 1][c] === player &&
+                        board[r + 2][c] === player &&
+                        board[r + 3][c] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check diagonally (top-left to bottom-right)
+            for (let c = 0; c <= COLS - WINNING_LENGTH; c++) {
+                for (let r =                 0; r <= ROWS - WINNING_LENGTH; r++) {
+                    if (board[r][c] === player &&
+                        board[r + 1][c + 1] === player &&
+                        board[r + 2][c + 2] === player &&
+                        board[r + 3][c + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check diagonally (bottom-left to top-right)
+            for (let c = 0; c <= COLS - WINNING_LENGTH; c++) {
+                for (let r = WINNING_LENGTH - 1; r < ROWS; r++) {
+                    if (board[r][c] === player &&
+                        board[r - 1][c + 1] === player &&
+                        board[r - 2][c + 2] === player &&
+                        board[r - 3][c + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // Check for a draw
+        function checkDraw() {
+            for (let col = 0; col < COLS; col++) {
+                if (board[0][col] === EMPTY) {
+                    return false; // There's an empty cell, game is not draw
+                }
+            }
+            return true; // No empty cells left, game is draw
+        }
+
+        // Render the game board
+        function renderBoard() {
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.remove('red', 'yellow');
+                    if (board[row][col] === PLAYER1) {
+                        cell.classList.add('red');
+                    } else if (board[row][col] === PLAYER2) {
+                        cell.classList.add('yellow');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
