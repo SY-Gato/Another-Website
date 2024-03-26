@@ -56,10 +56,13 @@
                 cell.className = 'cell';
                 cell.dataset.row = i;
                 cell.dataset.col = j;
-                // Add event listener for player's moves
-                cell.addEventListener('click', () => makePlayerMove(j));
                 boardElement.appendChild(cell);
                 board[i][j] = EMPTY;
+            }
+            // Add event listener for player's moves
+            for (let col = 0; col < COLS; col++) {
+              const cell = document.querySelector(`.cell[data-col="${col}"]`);
+              cell.addEventListener('click', () => makePlayerMove(col));
             }
         }
 
