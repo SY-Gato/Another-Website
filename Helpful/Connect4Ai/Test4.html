@@ -143,7 +143,7 @@
 
         // Placeholder function for predicting the best move using a pre-trained model
         // Predict the best move for the AI
-function predictBestMove() {
+async function predictBestMove() {
     // Check for winning move
     for (let col = 0; col < COLS; col++) {
         const row = getNextEmptyRow(col);
