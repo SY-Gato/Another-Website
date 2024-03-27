@@ -58,8 +58,11 @@
                 cell.dataset.col = j;
                 boardElement.appendChild(cell);
                 board[i][j] = EMPTY;
-                // Add event listener for player's moves
-                cell.addEventListener('click', () => makePlayerMove(parseInt(cell.dataset.col)));
+            }
+            // Add event listener for player's moves
+            for (let k = 0; k < COLS; k++) {
+              const cell = document.querySelector(`.cell[data-col="${k}"]`);
+              cell.addEventListener('click', () => makePlayerMove(k));
             }
         }
 
@@ -87,9 +90,37 @@
                         } else {
                             currentPlayer = PLAYER2;
                             document.getElementById('turnIndicator').innerText = "Player 2's Turn";
+                            aiMove();
                         }
                         return;
                     }
+                }
+            }
+        }
+
+        // AI makes a move using a simple neural network model
+        async function aiMove() {
+            const col = await predictBestMove();
+            makeAIMove(col);
+        }
+
+        // Make a move on the board for the AI
+        function makeAIMove(col) {
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (board[row][col] === EMPTY) {
+                    board[row][col] = currentPlayer;
+                    renderBoard();
+                    if (checkWin(row, col, currentPlayer)) {
+                        alert('Player 2 wins!');
+                        resetGame();
+                    } else if (checkDraw()) {
+                        alert('It\'s a draw!');
+                        resetGame();
+                    } else {
+                        currentPlayer = PLAYER1;
+                        document.getElementById('turnIndicator').innerText = "Player 1's Turn";
+                    }
+                    return;
                 }
             }
         }
@@ -109,20 +140,172 @@
             }
         }
 
+        // Placeholder function for predicting the best move using a pre-trained model
+        // Predict the best move for the AI
+function predictBestMove() {
+    // Check for winning move
+    for (let col = 0; col < COLS; col++) {
+        const row = getNextEmptyRow(col);
+        if (row !== -1 && isWinningMove(row, col, currentPlayer)) {
+            return col;
+        }
+    }
+
+    // Check for blocking the opponent's winning move
+    for (let col = 0; col < COLS; col++) {
+        const row = getNextEmptyRow(col);
+        if (row !== -1 && isWinningMove(row, col, getOpponent())) {
+            return col;
+        }
+    }
+
+    // Choose the column that maximizes own wins or blocks the opponent's wins
+    let bestMove = -1;
+    let maxScore = -Infinity;
+    for (let col = 0; col < COLS; col++) {
+        const row = getNextEmptyRow(col);
+        if (row !== -1) {
+            const score = evaluateMove(row, col);
+            if (score > maxScore) {
+                maxScore = score;
+                bestMove = col;
+            }
+        }
+    }
+
+    return bestMove;
+}
+
+// Get the opponent player
+function getOpponent() {
+    return currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1;
+}
+
+// Get the row of the next available empty cell in a column
+function getNextEmptyRow(col) {
+    for (let row = ROWS - 1; row >= 0; row--) {
+        if (board[row][col] === EMPTY) {
+            return row;
+        }
+    }
+    return -1; // Column is full
+}
+
+// Evaluate a move based on heuristic criteria
+function evaluateMove(row, col) {
+    let score = 0;
+
+    // Evaluate vertical and horizontal potential wins
+    score += evaluateDirection(row, col, 1, 0); // Vertical
+    score += evaluateDirection(row, col, 0, 1); // Horizontal
+
+    // Evaluate diagonal potential wins (both directions)
+    score += evaluateDirection(row, col, 1, 1); // Diagonal /
+    score += evaluateDirection(row, col, 1, -1); // Diagonal \
+
+    return score;
+}
+
+// Evaluate a direction (vertical, horizontal, or diagonal) for potential wins
+function evaluateDirection(row, col, dRow, dCol) {
+    let score = 0;
+    const player = currentPlayer;
+
+    // Check for potential win in the positive direction
+    for (let i = 1; i < 4; i++) {
+        const newRow = row + i * dRow;
+        const newCol = col + i * dCol;
+        if (isValidPosition(newRow, newCol) && board[newRow][newCol] === player) {
+            score++;
+        } else {
+            break; // Stop searching if a different player's piece or an empty cell is encountered
+        }
+    }
+
+    // Check for potential win in the negative direction
+    for (let i = 1; i < 4; i++) {
+        const newRow = row - i * dRow;
+        const newCol = col - i * dCol;
+        if (isValidPosition(newRow, newCol) && board[newRow][newCol] === player) {
+            score++;
+        } else {
+            break; // Stop searching if a different player's piece or an empty cell is encountered
+        }
+    }
+
+    return score;
+}
+
+// Check if a position is valid (inside the board boundaries)
+function isValidPosition(row, col) {
+    return row >= 0 && row < ROWS && col >= 0 && col < COLS;
+}
+
+
         // Placeholder functions for checking win and draw conditions (replace with actual logic)
         function checkWin(row, col, player) {
-            // Placeholder win condition checking logic
+            // Check horizontally
+            let count = 0;
+            for (let c = col - 3; c <= col + 3; c++) {
+                if (board[row] && board[row][c] === player) {
+                    count++;
+                    if (count === 4) return true;
+                } else {
+                    count = 0;
+                }
+            }
+
+            // Check vertically
+            count = 0;
+            for (let r = row - 3; r <= row + 3; r++) {
+                if (board[r] && board[r][col] === player) {
+                    count++;
+                    if (count === 4) return true;
+                } else {
+                    count = 0;
+                }
+            }
+
+                        // Check diagonally (down-right)
+            count = 0;
+            for (let i = -3; i <= 3; i++) {
+                const r = row + i;
+                const c = col + i;
+                if (board[r] && board[r][c] === player) {
+                    count++;
+                    if (count === 4) return true;
+                } else {
+                    count = 0;
+                }
+            }
+
+            // Check diagonally (down-left)
+            count = 0;
+            for (let i = -3; i <= 3; i++) {
+                const r = row + i;
+                const c = col - i;
+                if (board[r] && board[r][c] === player) {
+                    count++;
+                    if (count === 4) return true;
+                } else {
+                    count = 0;
+                }
+            }
+
             return false;
         }
 
         function checkDraw() {
             for (let col = 0; col < COLS; col++) {
                 if (board[0][col] === EMPTY) {
-                    return false; // If any cell in the top row is empty, the game is not a draw
+                    return false;
                 }
             }
-            return true; // If all cells in the top row are occupied, the game is a draw
+            return true;
         }
     </script>
 </body>
 </html>
+
+
+           
